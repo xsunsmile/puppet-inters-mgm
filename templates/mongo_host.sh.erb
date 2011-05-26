@@ -1,0 +1,95 @@
+#!/usr/bin/ruby
+
+require 'rubygems'
+require 'mongo'
+require 'socket'
+require 'facter'
+
+operation = ARGV.shift
+mongo_host = "<%= mongodb_host %>"
+torque_spool_dir = "<%= scope.function_extlookup(['torque_spool_dir']) %>"
+torque_spool_dir = "/var/spool/torque" unless torque_spool_dir.size > 0
+torque_nodes_file = torque_spool_dir + "/server_priv/nodes"
+hosts_db = "inters_hosts"
+
+conn = Mongo::Connection.new( mongo_host )
+db = conn.db( hosts_db )
+hosts_coll = db.collection("hosts")
+
+def put( hosts_coll )
+    hostname = ARGV.shift
+    hostname = Socket.gethostname unless hostname
+    hostname_s = hostname.split(/\./).first
+    hostent = Socket.gethostbyname( hostname )
+    hostip = hostent[3].unpack("C4").join('.')
+    host = hosts_coll.find( "name" => hostname_s ).first
+    np = Facter.value(:processorcount) || `cat /proc/cpuinfo | grep -c processor`.sub(/\n/,'')
+    if host
+      hosts_coll.update({"_id" => host["_id"]},
+        {"$set" => {"namef" => "#{hostname_s}.#{`hostname -d`.sub(/\n/,'')}" } } )
+      hosts_coll.update({"_id" => host["_id"]},
+        {"$set" => {"ip" => hostip } } )
+      hosts_coll.update({"_id" => host["_id"]},
+        {"$set" => {"np" => np } } )
+    else
+      new_host = { "name" => hostname_s,
+        "namef" => "#{hostname_s}.#{`hostname -d`.sub(/\n/,'')}",
+        "ip" => hostip, "np" => np }
+      hosts_coll.insert( new_host )
+    end
+end
+
+def get( hosts_coll )
+    get_arg, result = ARGV.shift, ''
+    case get_arg
+      when 'all'
+        result = hosts_coll.find().collect{ |it| it["name"] }
+      else
+        result = hosts_coll.find().collect do |it|
+          it["name"] if it["name"] != `hostname -s`.sub(/\n/,'')
+        end.compact
+    end
+    puts result
+end
+
+def sync_to_torque( hosts_coll, torque_nodes_file )
+    hosts_file = open(torque_nodes_file, 'w+')
+    hosts_coll.find().each do |it|
+      hosts_file.puts("#{it['name']}  np=#{it['np']}")
+    end
+    hosts_file.close
+end
+
+def sync_to_etchosts( hosts_coll )
+
+    hosts_file = open("/etc/hosts", 'r')
+    lines = hosts_file.read.split(/\n/)
+    hosts_file.close
+
+    hosts_file = open("/etc/hosts", 'w+')
+    preserved_lines, has_preserved_line = "", false
+    lines.each do |line|
+      preserved_lines += line + "\n"
+      if line =~ /^# inters hosts$/
+        has_preserved_line = true; break
+      end
+    end
+    hosts_file.puts(preserved_lines)
+    hosts_file.puts("# inters hosts") unless has_preserved_line
+    hosts_coll.find().each do |it|
+      hosts_file.puts("#{it['ip']} #{it['name']}")
+    end
+    hosts_file.close
+end
+
+case operation
+  when 'put'
+    put( hosts_coll )
+  when 'get'
+    get( hosts_coll )
+  when 'sync_to_torque'
+    sync_to_torque( hosts_coll, torque_nodes_file )
+  when 'sync_to_etchosts'
+    sync_to_etchosts( hosts_coll )
+end
+
