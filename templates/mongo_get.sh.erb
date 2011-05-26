@@ -1,4 +1,4 @@
-MONGO_HOST="<%= mongodb_host %>"
+MONGO_HOST="<%= scope.function_extlookup(['mongodb_host']) %>"
 name=""
 
 [ ! -z "$1" ] && MONGO_HOST="$1"
