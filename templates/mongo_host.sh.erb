@@ -53,11 +53,10 @@ def get( hosts_coll )
 end
 
 def sync_to_torque( hosts_coll, torque_nodes_file )
-    hosts_file = open(torque_nodes_file, 'w+')
     hosts_coll.find().each do |it|
-      hosts_file.puts("#{it['name']}  np=#{it['np']}")
+      # hosts_file.puts("#{it['name']}  np=#{it['np']}")
+      `sudo /opt/torque/bin/qmgr -c "create node #{it['name']}"`
     end
-    hosts_file.close
 end
 
 def sync_to_etchosts( hosts_coll )
