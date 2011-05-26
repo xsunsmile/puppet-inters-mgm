@@ -57,7 +57,7 @@ def sync_to_torque( hosts_coll, torque_nodes_file )
     nodes = nodes_file.read.split(/\n/)
     nodes_file.close
     hosts_coll.find().each do |it|
-      _has = nodes.find{|it| it =~ /^#{it['name']}/}
+      _has = nodes.find{|item| item =~ /^#{it['name']}/}
       `sudo /opt/torque/bin/qmgr -c "create node #{it['name']}"` unless _has
     end
 end
