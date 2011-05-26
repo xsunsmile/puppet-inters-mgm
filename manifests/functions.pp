@@ -6,7 +6,7 @@ class inters::functions {
 			command => "mongofiles -r --host mongodb_host put ${name}",
 			require => [
 				Service["mongodb"],
-				Line['mongodb_host_pub'] 
+				Line['mongodb_host_pub'],
 			],
 		}
 	}
@@ -17,7 +17,7 @@ class inters::functions {
 			require => [
 				File['/usr/bin/mongo_get'],
 				Service["mongodb"],
-				Line['mongodb_host_pub']
+				Line['mongodb_host_pub'],
 			],
 		}
 	}

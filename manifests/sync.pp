@@ -2,6 +2,7 @@
 class inters::sync {
 
 	$hostname_s = extlookup('hostname_s')
+	$mongodb_host = extlookup('mongodb_host')
 
 	line { 'mongodb_host_pub':
 		file => "/etc/hosts",
