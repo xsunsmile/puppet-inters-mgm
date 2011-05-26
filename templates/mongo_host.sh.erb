@@ -67,9 +67,9 @@ def sync_to_etchosts( hosts_coll )
     hosts_file = open("/etc/hosts", 'w+')
     preserved_lines, has_preserved_line = "", false
     lines.each do |line|
-      _hostname = line.split.last
-      _has = hosts_coll.find({name: _hostname})
-      preserved_lines += line + "\n" unless _has
+      _hostname = line.split.last || ''
+      _has = hosts_coll.find("name" => _hostname).count
+      preserved_lines += line + "\n" unless _has > 0
       if line =~ /^# inters hosts$/
         has_preserved_line = true; break
       end
@@ -77,7 +77,7 @@ def sync_to_etchosts( hosts_coll )
     hosts_file.puts(preserved_lines)
     hosts_file.puts("# inters hosts") unless has_preserved_line
     hosts_coll.find().each do |it|
-      hosts_file.puts("#{it['ip']} #{it['name_f']} #{it['name']}")
+      hosts_file.puts("#{it['ip']} #{it['namef']} #{it['name']}")
     end
     hosts_file.close
 end
