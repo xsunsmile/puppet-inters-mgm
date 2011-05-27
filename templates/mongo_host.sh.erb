@@ -24,7 +24,7 @@ def put( hosts_coll )
     hostip = hostent[3].unpack("C4").join('.')
     host_info = hosts_coll.find_one( "name" => hostname_s )
     np = Facter.value(:processorcount) || `cat /proc/cpuinfo | grep -c processor`.sub(/\n/,'')
-    if host_info.count > 0
+    if host_info
       if host_info['ip'] != hostip
         hosts_coll.update({"_id" => host_info["_id"]},
           {"$set" => {"namef" => "#{hostname_s}.#{`hostname -d`.sub(/\n/,'')}"}})
