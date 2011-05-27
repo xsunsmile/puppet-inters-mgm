@@ -1,5 +1,5 @@
 
-import mongodb::ruby
+import "mongodb::ruby"
 
 class inters::executable {
 
