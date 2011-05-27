@@ -5,7 +5,7 @@ class inters::cron {
 		ensure => present,
 		command => "/usr/bin/mongo_host sync_to_etchosts",
 		user => root,
-		minute => '*/5',
+		minute => '*/1',
 	}
 
 }
