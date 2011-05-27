@@ -21,6 +21,7 @@ class inters::sync {
 			default => "mongo_host put ${hostname_s}",
 		},
 		require => [ Service['mongodb'], File['/usr/bin/mongo_host'] ],
+		before => File["/tmp/torque/fetch.sh"],
 	}
 
 }
