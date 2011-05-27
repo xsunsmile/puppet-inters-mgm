@@ -22,19 +22,27 @@ def put( hosts_coll )
     hostname_s = hostname.split(/\./).first
     hostent = Socket.gethostbyname( hostname )
     hostip = hostent[3].unpack("C4").join('.')
-    host = hosts_coll.find( "name" => hostname_s ).first
+    host_info = hosts_coll.find_one( "name" => hostname_s )
     np = Facter.value(:processorcount) || `cat /proc/cpuinfo | grep -c processor`.sub(/\n/,'')
-    if host
-      hosts_coll.update({"_id" => host["_id"]},
-        {"$set" => {"namef" => "#{hostname_s}.#{`hostname -d`.sub(/\n/,'')}" } } )
-      hosts_coll.update({"_id" => host["_id"]},
-        {"$set" => {"ip" => hostip } } )
-      hosts_coll.update({"_id" => host["_id"]},
-        {"$set" => {"np" => np } } )
+    if host_info.count > 0
+      if host_info['ip'] != hostip
+        hosts_coll.update({"_id" => host["_id"]},
+          {"$set" => {"namef" => "#{hostname_s}.#{`hostname -d`.sub(/\n/,'')}"}})
+        hosts_coll.update({"_id" => host["_id"]},
+          {"$set" => {"ip" => hostip}})
+        hosts_coll.update({"_id" => host["_id"]},
+          {"$set" => {"np" => np}})
+        hosts_coll.update({"_id" => host["_id"]},
+          {"$set" => {"changed" => 1}})
+      end
     else
-      new_host = { "name" => hostname_s,
+      new_host = {
+        "name" => hostname_s,
         "namef" => "#{hostname_s}.#{`hostname -d`.sub(/\n/,'')}",
-        "ip" => hostip, "np" => np }
+        "ip" => hostip,
+        "np" => np,
+        "changed" => 0
+      }
       hosts_coll.insert( new_host )
     end
 end
@@ -59,6 +67,10 @@ def sync_to_torque( hosts_coll, torque_nodes_file )
     hosts_coll.find().each do |it|
       _has = nodes.find{|item| item =~ /^#{it['name']}/}
       `sudo /opt/torque/bin/qmgr -c "create node #{it['name']}"` unless _has
+      if it['changed'] == 1
+        `sudo /opt/torque/bin/qmgr -c "delete node #{it['name']}"`
+        `sudo /opt/torque/bin/qmgr -c "create node #{it['name']}"`
+      end
     end
 end
 
