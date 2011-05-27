@@ -1,4 +1,5 @@
 
+import mongodb::ruby
 
 class inters::executable {
 
@@ -8,7 +9,7 @@ class inters::executable {
 		group => root,
 		mode => 0755,
 		content => template("inters/mongo_host.sh.erb"),
-		require => Package['ruby'],
+		require => [ Package['ruby'], Package['mongo'] ]
 	}
 
 	file { '/usr/bin/mongo_get':
@@ -16,6 +17,7 @@ class inters::executable {
 		owner => root,
 		group => root,
 		content => template("inters/mongo_get.sh.erb"),
+		require => [ Package['ruby'], Package['mongo'] ]
 	}
 
 }
