@@ -1,6 +1,4 @@
 
-import "mongodb::ruby"
-
 class inters::executable {
 
 	file { "/usr/bin/mongo_host":
