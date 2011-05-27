@@ -70,6 +70,7 @@ def sync_to_torque( hosts_coll, torque_nodes_file )
       if it['changed'] == 1
         `sudo /opt/torque/bin/qmgr -c "delete node #{it['name']}"`
         `sudo /opt/torque/bin/qmgr -c "create node #{it['name']}"`
+        hosts_coll.update({"_id" => it["_id"]}, {"$set" => {"changed" => 0}})
       end
     end
 end
