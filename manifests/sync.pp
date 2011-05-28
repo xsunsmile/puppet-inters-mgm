@@ -9,11 +9,6 @@ class inters::sync {
 		line => "${mongodb_host}	mongodb-master	mongodb_host",
 	}
 
-	line { 'mongodb_host_pri':
-		file => "/etc/hosts",
-		line => "${ipaddress}	mongodb-master-pri	mongodb_host_pri",
-	}
-
 	exec { "add_host":
 		path => "/bin:/usr/bin",
 		command => $hostname_s ?{
