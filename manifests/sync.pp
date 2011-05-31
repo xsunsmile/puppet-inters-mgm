@@ -18,7 +18,12 @@ class inters::sync {
 			default => "mongo_host put ${hostname_s}",
 		},
 		require => [ Service['mongodb'], File['/usr/bin/mongo_host'] ],
-		before => File["/tmp/torque/fetch.sh"],
 	}
 
+	if $hostname == $torque::params::torque_master {
+		include torque::compile
+		Exec["add_host"] {
+			before +> File["/tmp/torque/fetch.sh"],
+		}
+	}
 }
