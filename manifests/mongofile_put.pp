@@ -8,7 +8,7 @@ define inters::mongofile_put {
 		command => "mongofiles -r --host mongodb_host put ${name}",
 		require => [
 			Service["mongodb"],
-			Replace['mongodb_host_pub'],
+			Line['mongodb_host_pub'],
 		],
 	}
 }

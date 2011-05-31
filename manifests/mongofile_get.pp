@@ -10,7 +10,7 @@ define inters::mongofile_get {
 		require => [
 			Service["mongodb"],
 			File['/usr/bin/mongo_get'],
-			Replace['mongodb_host_pub'],
+			Line['mongodb_host_pub'],
 		],
 	}
 }

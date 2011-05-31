@@ -5,11 +5,19 @@ class inters::sync {
 
 	$hostname_s = extlookup('hostname_s')
 	$mongodb_host = extlookup('mongodb_host')
+	$has_mongodb_line = has_line('/etc/hosts',"mongodb-master.*$")
 
-	replace { 'mongodb_host_pub':
+	if $has_mongodb_line {
+		line { 'mongodb_host_pub':
+			ensure => absent,
+			file => "/etc/hosts",
+			line => "mongodb-master",
+		}
+	}
+
+	line { 'mongodb_host_pub':
 		file => "/etc/hosts",
-		pattern => "^${mongodb_host}	mongodb.*$",
-		replacement => "${mongodb_host}	mongodb-master	mongodb_host",
+		line => "${mongodb_host}	mongodb-master	mongodb_host",
 	}
 
 	exec { "add_host":
