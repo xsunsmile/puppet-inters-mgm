@@ -1,6 +1,10 @@
 
 class inters::executable {
 
+	$torque_home = extlookup('torque_install_dist')
+	$mongo_host = extlookup('mongodb_host')
+	$torque_spool_dir = extlookup('torque_spool_dir')
+
 	file { "/usr/bin/mongo_host":
 		ensure => present,
 		owner => root,
