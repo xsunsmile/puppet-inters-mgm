@@ -6,7 +6,7 @@ require 'socket'
 require 'facter'
 
 operation = ARGV.shift
-torque_home = "<%= torque_home %>"
+@torque_home = "<%= torque_home %>"
 mongo_host = "<%= mongo_host %>"
 torque_spool_dir = "<%= torque_spool_dir %>"
 torque_spool_dir = "/var/spool/torque" unless torque_spool_dir.size > 0
@@ -67,10 +67,10 @@ def sync_to_torque( hosts_coll, torque_nodes_file )
     nodes_file.close
     hosts_coll.find().each do |it|
       _has = nodes.find{|item| item =~ /^#{it['name']}/}
-      `sudo #{torque_home}/bin/qmgr -c "create node #{it['name']}"` unless _has
+      `sudo #{@torque_home}/bin/qmgr -c "create node #{it['name']}"` unless _has
       if it['changed'] == 1
-        `sudo #{torque_home}/bin/qmgr -c "delete node #{it['name']}"`
-        `sudo #{torque_home}/bin/qmgr -c "create node #{it['name']}"`
+        `sudo #{@torque_home}/bin/qmgr -c "delete node #{it['name']}"`
+        `sudo #{@torque_home}/bin/qmgr -c "create node #{it['name']}"`
         hosts_coll.update({"_id" => it["_id"]}, {"$set" => {"changed" => 0}})
       end
     end
