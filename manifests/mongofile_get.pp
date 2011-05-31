@@ -1,8 +1,10 @@
 
 
 define inters::mongofile_get {
-	import 'inters::sync'
-	import 'inters::executable'
+
+	include inters::sync
+	include inters::executable
+
 	exec { "mongofile_get_${name}":
 		command => "mongo_get mongodb_host ${name} && echo ''",
 		require => [

@@ -1,7 +1,7 @@
 
 class inters::sync {
 
-	import 'inters::executable'
+	include inters::executable
 
 	$hostname_s = extlookup('hostname_s')
 	$mongodb_host = extlookup('mongodb_host')
