@@ -6,7 +6,7 @@ require 'socket'
 require 'facter'
 
 operation = ARGV.shift
-torque_home = "<% install_dist %>"
+torque_home = "<%= scope.function_extlookup(['torque_install_dist']) %>"
 mongo_host = "<%= scope.function_extlookup(['mongodb_host']) %>"
 torque_spool_dir = "<%= scope.function_extlookup(['torque_spool_dir']) %>"
 torque_spool_dir = "/var/spool/torque" unless torque_spool_dir.size > 0

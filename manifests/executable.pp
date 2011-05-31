@@ -1,6 +1,8 @@
 
 class inters::executable {
 
+	$install_dist = extlookup('torque_install_dist')
+
 	file { "/usr/bin/mongo_host":
 		ensure => present,
 		owner => root,
