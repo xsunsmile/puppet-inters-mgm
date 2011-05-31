@@ -8,7 +8,7 @@ class inters::sync {
 
 	replace { 'mongodb_host_pub':
 		file => "/etc/hosts",
-		pattern => "^${mongodb_host}.*$",
+		pattern => "^${mongodb_host}	mongodb.*$",
 		replacement => "${mongodb_host}	mongodb-master	mongodb_host",
 	}
 
