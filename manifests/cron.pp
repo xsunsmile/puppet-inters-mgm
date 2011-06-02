@@ -5,22 +5,17 @@ class inters::cron {
 
 	package { 'postfix': ensure => present }
 
-	# exec { 'stop-cron':
-	# 	command => '/etc/init.d/cron stop',
-	# 	require => Package['postfix'],
-	# }
-
-	# exec { 'start-cron':
-	# 	command => '/etc/init.d/cron start',
-	# 	require => Exec['stop-cron'],
-	# }
+	exec { 'restart-cron':
+		command => '/etc/init.d/cron restart',
+		require => Package['postfix'],
+	}
 
 	cron { 'set-env':
 		ensure => present,
 		environment => "PATH=/bin:/usr/bin:/usr/local/bin:${gem_path}\nMAILTO=root",
 		command => "echo",
 		month => '1',
-	 	require => Package['postfix'],
+	 	require => Exec['restart-cron'],
 	}
 
 	cron { 'sync_hosts':
