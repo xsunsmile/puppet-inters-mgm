@@ -25,6 +25,7 @@ def put( hosts_coll )
     hostip = hostent[3].unpack("C4").join('.')
     host_info = hosts_coll.find_one( "name" => hostname_s )
     np = Facter.value(:processorcount) || `cat /proc/cpuinfo | grep -c processor`.sub(/\n/,'')
+    architecture = Facter.value(:architecture) || `arch`.sub(/\n/,'')
     if host_info
       if host_info['ip'] != hostip
         hosts_coll.update({"_id" => host_info["_id"]},
@@ -35,6 +36,8 @@ def put( hosts_coll )
           {"$set" => {"np" => np}})
         hosts_coll.update({"_id" => host_info["_id"]},
           {"$set" => {"changed" => 1}})
+        hosts_coll.update({"_id" => host_info["_id"]},
+          {"$set" => {"arch" => architecture}})
       end
     else
       new_host = {
@@ -43,6 +46,7 @@ def put( hosts_coll )
         "ip" => hostip,
         "np" => np,
         "changed" => 0
+        "arch" => architecture,
       }
       hosts_coll.insert( new_host )
     end
@@ -54,9 +58,9 @@ def get( hosts_coll )
       when 'all'
         result = hosts_coll.find().collect{ |it| it["name"] }
       else
-        result = hosts_coll.find().collect do |it|
-          it["name"] if it["name"] != `hostname -s`.sub(/\n/,'')
-        end.compact
+        prop = ARGV.shift
+        host_info = hosts_coll.find_one( "name" => get_arg )
+        result = host_info["#{prop}"] if host_info
     end
     puts result
 end
