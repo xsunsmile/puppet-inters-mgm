@@ -45,7 +45,7 @@ def put( hosts_coll )
         "namef" => "#{hostname_s}.#{`hostname -d`.sub(/\n/,'')}",
         "ip" => hostip,
         "np" => np,
-        "changed" => 0
+        "changed" => 0,
         "arch" => architecture,
       }
       hosts_coll.insert( new_host )
