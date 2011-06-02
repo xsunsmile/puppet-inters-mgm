@@ -5,22 +5,22 @@ class inters::cron {
 
 	package { 'postfix': ensure => present }
 
-	exec { 'stop-cron':
-		command => '/etc/init.d/cron stop',
-		require => Package['postfix'],
-	}
+	# exec { 'stop-cron':
+	# 	command => '/etc/init.d/cron stop',
+	# 	require => Package['postfix'],
+	# }
 
-	exec { 'start-cron':
-		command => '/etc/init.d/cron start',
-		require => Exec['stop-cron'],
-	}
+	# exec { 'start-cron':
+	# 	command => '/etc/init.d/cron start',
+	# 	require => Exec['stop-cron'],
+	# }
 
 	cron { 'set-env':
 		ensure => present,
 		environment => "PATH=/bin:/usr/bin:/usr/local/bin:${gem_path}\nMAILTO=root",
 		command => "echo",
 		month => '1',
-		require => Exec['start-cron'],
+	 	require => Package['postfix'],
 	}
 
 	cron { 'sync_hosts':
@@ -42,7 +42,7 @@ class inters::cron {
 	if $hostname == extlookup('torque_master_name') {
 		cron { 'update_puppet_modules':
 			ensure => present,
-			command => "cd /etc/puppet/modules && sh update.sh | tee -a /tmp/update_puppet.log",
+			command => "cd /etc/puppet/modules && ./update.sh | tee -a /tmp/update_puppet.log",
 			user => root,
 			minute => '*/5',
 			require => Cron['set-env'],
