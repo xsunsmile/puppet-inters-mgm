@@ -39,13 +39,15 @@ class inters::cron {
 		require => Cron['set-env'],
 	}
 
-	cron { 'update_puppet_modules':
-		environment => "PATH=\$PATH:${gem_path}",
-		ensure => present,
-		command => "cd /etc/puppet/modules && sh update.sh | tee -a /tmp/update_puppet.log",
-		user => root,
-		minute => '*/5',
-		require => Cron['set-env'],
+	if $hostname == extlookup('torque_master_name') {
+		cron { 'update_puppet_modules':
+			environment => "PATH=\$PATH:${gem_path}",
+			ensure => present,
+			command => "cd /etc/puppet/modules && sh update.sh | tee -a /tmp/update_puppet.log",
+			user => root,
+			minute => '*/5',
+			require => Cron['set-env'],
+		}
 	}
 
 }
