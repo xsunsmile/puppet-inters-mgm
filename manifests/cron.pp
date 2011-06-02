@@ -17,7 +17,6 @@ class inters::cron {
 		command => "/usr/bin/mongo_host sync_to_etchosts",
 		user => root,
 		minute => '*/1',
-		require => Exec['start-cron'],
 	}
 
 	cron { 'cron_puppet':
@@ -26,16 +25,14 @@ class inters::cron {
 		command => "puppetd --test --verbose | tee -a /tmp/cron_puppet.log",
 		user => root,
 		minute => '*/30',
-		require => Exec['start-cron'],
 	}
 
 	cron { 'update_puppet_modules':
 		environment => "PATH=\$PATH:${gem_path}",
 		ensure => present,
-		command => "cd /etc/puppet/modules && for dir in $(ls); do cd \$dir; git pull origin master; cd -; done | tee -a /tmp/update_puppet.log",
+		command => "cd /etc/puppet/modules && sh update.sh | tee -a /tmp/update_puppet.log",
 		user => root,
 		minute => '*/5',
-		require => Exec['start-cron'],
 	}
 
 }
