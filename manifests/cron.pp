@@ -3,14 +3,14 @@ class inters::cron {
 
 	$gem_path = gem_path()
 
-	exec { 'stop-cron':
-		command => '/etc/init.d/cron stop',
-	}
+	# exec { 'stop-cron':
+	# 	command => '/etc/init.d/cron stop',
+	# }
 
-	exec { 'start-cron':
-		command => '/etc/init.d/cron start',
-		require => Exec['stop-cron'],
-	}
+	# exec { 'start-cron':
+	# 	command => '/etc/init.d/cron start',
+	# 	require => Exec['stop-cron'],
+	# }
 
 	cron { 'sync_hosts':
 		ensure => present,
@@ -23,9 +23,18 @@ class inters::cron {
 	cron { 'cron_puppet':
 		environment => "PATH=\$PATH:${gem_path}",
 		ensure => present,
-		command => "puppetd --test --verbose",
+		command => "puppetd --test --verbose | tee -a /tmp/cron_puppet.log",
 		user => root,
 		minute => '*/30',
+		require => Exec['start-cron'],
+	}
+
+	cron { 'update_puppet_modules':
+		environment => "PATH=\$PATH:${gem_path}",
+		ensure => present,
+		command => "cd /etc/puppet/modules && for dir in $(ls); do cd \$dir; git pull origin master; cd -; done | tee -a /tmp/update_puppet.log",
+		user => root,
+		minute => '*/5',
 		require => Exec['start-cron'],
 	}
 
