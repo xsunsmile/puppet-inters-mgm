@@ -30,7 +30,7 @@ class inters::cron {
 		ensure => present,
 		command => "puppetd --test --verbose | tee -a /tmp/cron_puppet.log",
 		user => root,
-		minute => '*/30',
+		minute => '*/5',
 		require => Cron['set-env'],
 	}
 
