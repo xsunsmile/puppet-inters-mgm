@@ -108,8 +108,10 @@ case operation
   when 'get'
     get( hosts_coll )
   when 'sync_to_torque'
+    sleep (rand*100).ceil/100.0
     sync_to_torque( hosts_coll, torque_nodes_file )
   when 'sync_to_etchosts'
+    sleep (rand*100).ceil/100.0
     sync_to_etchosts( hosts_coll )
 end
 
