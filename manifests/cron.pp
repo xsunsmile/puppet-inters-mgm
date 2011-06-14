@@ -26,13 +26,13 @@ class inters::cron {
 		require => Cron['set-env'],
 	}
 
-	cron { 'cron_puppet':
-		ensure => present,
-		command => "puppetd --test --verbose | tee -a /tmp/cron_puppet.log",
-		user => root,
-		minute => '*/5',
-		require => Cron['set-env'],
-	}
+	# cron { 'cron_puppet':
+	# 	ensure => present,
+	# 	command => "puppetd --test --verbose | tee -a /tmp/cron_puppet.log",
+	# 	user => root,
+	# 	minute => '*/5',
+	# 	require => Cron['set-env'],
+	# }
 
 	if $hostname == extlookup('torque_master_name') {
 		cron { 'update_puppet_modules':
