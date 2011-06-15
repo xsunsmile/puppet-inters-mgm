@@ -40,6 +40,10 @@ def put( hosts_coll )
           {"$set" => {"arch" => architecture}})
       end
     else
+      host_info2 = hosts_coll.find_one( "ip" => hostip )
+      if host_info2 && host_info2['name'] != hostname_s
+        hosts_coll.remove({"_id" => host_info2["_id"]})
+      end
       new_host = {
         "name" => hostname_s,
         "namef" => "#{hostname_s}.#{`hostname -d`.sub(/\n/,'')}",
