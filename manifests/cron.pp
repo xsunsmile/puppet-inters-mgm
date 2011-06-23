@@ -13,14 +13,14 @@ class inters::cron {
 	cron { 'set-env':
 		ensure => present,
 		environment => "PATH=/bin:/usr/bin:/usr/local/bin:${gem_path}\nMAILTO=root",
-		command => "echo",
+		command => "echo ''",
 		month => '1',
 	 	require => Exec['restart-cron'],
 	}
 
 	cron { 'sync_hosts':
 		ensure => present,
-		command => "/usr/bin/mongo_host sync_to_etchosts",
+		command => "/usr/bin/mongo_host sync_to_etchosts || true",
 		user => root,
 		minute => '*/1',
 		require => Cron['set-env'],
