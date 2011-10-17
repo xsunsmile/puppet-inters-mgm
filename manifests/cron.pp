@@ -23,7 +23,6 @@ class inters::cron {
 		command => "/usr/bin/mongo_host sync_to_etchosts || true",
 		user => root,
 		minute => '*/3',
-		require => Cron['set-env'],
 	}
 
 	# cron { 'cron_puppet':
@@ -31,7 +30,6 @@ class inters::cron {
 	# 	command => "puppetd --test --verbose | tee -a /tmp/cron_puppet.log",
 	# 	user => root,
 	# 	minute => '*/5',
-	# 	require => Cron['set-env'],
 	# }
 
 	if $hostname == extlookup('torque_master_name') {
@@ -40,7 +38,6 @@ class inters::cron {
 			command => "cd /etc/puppet/modules && ./update.sh | tee -a /tmp/update_puppet.log",
 			user => root,
 			minute => '*/5',
-			require => Cron['set-env'],
 		}
 	}
 
