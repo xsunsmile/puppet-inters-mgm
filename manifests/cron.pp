@@ -35,7 +35,7 @@ class inters::cron {
 	if $hostname == extlookup('torque_master_name') {
 		cron { 'update_puppet_modules':
 			ensure => present,
-			command => "cd /etc/puppet/modules && ./update.sh | tee -a /tmp/update_puppet.log",
+			command => "cd /etc/puppet/modules && ./update.sh | tee -a /tmp/update_puppet.log || true",
 			user => root,
 			minute => '*/5',
 		}
