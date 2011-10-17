@@ -22,7 +22,7 @@ class inters::cron {
 		ensure => present,
 		command => "/usr/bin/mongo_host sync_to_etchosts || true",
 		user => root,
-		minute => '*/1',
+		minute => '*/3',
 		require => Cron['set-env'],
 	}
 
