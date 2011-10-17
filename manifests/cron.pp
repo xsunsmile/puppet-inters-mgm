@@ -10,16 +10,16 @@ class inters::cron {
 		require => Package['postfix'],
 	}
 
-	cron { 'set-env':
-		ensure => present,
-		environment => "PATH=/bin:/usr/bin:/usr/local/bin:${gem_path}\nMAILTO=root",
-		command => "echo ''",
-		month => '1',
-	 	require => Exec['restart-cron'],
-	}
+#	cron { 'set-env':
+#		ensure => present,
+#		command => "echo ''",
+#		month => '1',
+#	 	require => Exec['restart-cron'],
+#	}
 
 	cron { 'sync_hosts':
 		ensure => present,
+		environment => "PATH=/bin:/usr/bin:/usr/local/bin:${gem_path}",
 		command => "/usr/bin/mongo_host sync_to_etchosts || true",
 		user => root,
 		minute => '*/3',
